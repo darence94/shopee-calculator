@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ee4d2d" />
+  <title>Shopee Profit Calculator</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <style>
+    :root { --bg:#f6f7fb; --card:#fff; --text:#17181c; --muted:#6f7480; --line:#e7e9ef; --brand:#ee4d2d; --brand2:#ff7558; --good:#138a5b; --bad:#c33d3d; --shadow:0 12px 34px rgba(28,31,38,.08); }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .app{max-width:760px;margin:0 auto;padding:20px 16px 40px}.top{padding:10px 2px 18px}.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:grid;place-items:center;color:white;font-weight:900;box-shadow:var(--shadow)}h1{font-size:24px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:4px}
+    .tabs,.seg{display:grid;grid-template-columns:1fr 1fr;background:#eceef3;padding:4px;border-radius:14px;gap:4px}.tabs{margin-bottom:14px}.tabs button,.seg button{border:0;background:transparent;padding:11px;border-radius:10px;font-weight:700;color:#656a75;cursor:pointer}.tabs button.active,.seg button.active{background:#fff;color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}.section-title{font-weight:800;font-size:14px;margin:0 0 13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:0 0 6px}.input-wrap{position:relative}.prefix,.suffix{position:absolute;top:50%;transform:translateY(-50%);color:#8a8f99;font-size:14px}.prefix{left:12px}.suffix{right:12px}.input-wrap input{width:100%;height:46px;border:1px solid #dfe2e8;border-radius:12px;background:#fbfcfe;padding:0 12px;font-size:16px;font-weight:700;outline:none}.input-wrap.prefixing input{padding-left:28px}.input-wrap.suffixing input{padding-right:34px}.input-wrap input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(238,77,45,.09)}
+    .hero{background:linear-gradient(135deg,#22252d,#111218);color:white;border:0}.hero .eyebrow{font-size:12px;opacity:.7;font-weight:700}.hero .profit{font-size:40px;font-weight:900;letter-spacing:-1.5px;margin:7px 0 4px}.hero .margin{font-size:14px;opacity:.8}.hero .good{color:#7ce5b3}.hero .bad{color:#ff9b91}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-radius:15px;overflow:hidden;border:1px solid var(--line)}.metric{background:white;padding:14px}.metric .k{font-size:11px;color:var(--muted);font-weight:700}.metric .v{font-size:18px;font-weight:850;margin-top:4px}.metric.full{grid-column:1/-1}
+    .fee-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #f0f1f4;font-size:14px}.fee-row:last-child{border:0}.fee-row span:first-child{color:#606570}.fee-row strong{font-variant-numeric:tabular-nums}.negative{color:var(--bad)}.note{font-size:12px;line-height:1.5;color:var(--muted);padding:0 4px}.hidden{display:none!important}.mode-note{margin-top:9px;font-size:11px;color:#777d87;line-height:1.4}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:12px;padding:12px 14px;font-weight:800;cursor:pointer}.btn.primary{background:var(--brand);color:#fff}.btn.secondary{background:#eceef3;color:#333842}.install{display:none;margin-top:12px;width:100%}
+    @media(max-width:560px){.grid{grid-template-columns:1fr}.app{padding-top:12px}.card{border-radius:17px;padding:15px}.profit{font-size:35px!important}.metrics{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="brand"><div class="logo">S</div><div><h1>Shopee Profit Calculator</h1><div class="sub">Mobile-friendly calculator based on NEW SHOPEE CALCULATOR.xlsx</div></div></div></div>
+
+  <div class="tabs"><button id="tabStandard" class="active">Standard</button><button id="tabCampaign">Campaign</button></div>
+
+  <div class="card">
+    <div class="section-title">Calculation Mode</div>
+    <div class="seg"><button id="modeExcel" class="active">Match Excel</button><button id="modeCorrected">Order-corrected</button></div>
+    <div class="mode-note" id="modeHelp">Reproduces the uploaded spreadsheet formulas exactly, including its per-item/MOQ behaviour.</div>
+  </div>
+
+  <section id="standardPanel">
+    <div class="card"><div class="section-title">Order Inputs</div><div class="grid">
+      <div class="field"><label>Minimum Order Quantity</label><div class="input-wrap"><input id="sMoq" type="number" min="1" step="1" value="1"></div></div>
+      <div class="field"><label>Selling Price / Item</label><div class="input-wrap prefixing"><span class="prefix">$</span><input id="sPrice" type="number" step="0.01" value="10"></div></div>
+      <div class="field"><label>Cost / Item</label><div class="input-wrap prefixing"><span class="prefix">$</span><input id="sCost" type="number" step="0.01" value="0.70"></div></div>
+      <div class="field"><label>Shipping Cost</label><div class="input-wrap prefixing"><span class="prefix">$</span><input id="sShipping" type="number" step="0.01" value="2.30"></div></div>
+    </div></div>
+    <div class="card"><div class="section-title">Platform Fees</div><div class="grid">
+      <div class="field"><label>Commission Fee</label><div class="input-wrap suffixing"><input id="sCommission" type="number" step="0.01" value="10.90"><span class="suffix">%</span></div></div>
+      <div class="field"><label>Service Fee</label><div class="input-wrap suffixing"><input id="sService" type="number" step="0.01" value="5.40"><span class="suffix">%</span></div></div>
+      <div class="field"><label>Transaction Fee</label><div class="input-wrap suffixing"><input id="sTransaction" type="number" step="0.01" value="3.27"><span class="suffix">%</span></div></div>
+    </div></div>
+  </section>
+
+  <section id="campaignPanel" class="hidden">
+    <div class="card"><div class="section-title">Campaign Inputs</div><div class="grid">
+      <div class="field"><label>Minimum Order Quantity</label><div class="input-wrap"><input id="cMoq" type="number" min="1" step="1" value="1"></div></div>
+      <div class="field"><label>Selling Price / Item</label><div class="input-wrap prefixing"><span class="prefix">$</span><input id="cPrice" type="number" step="0.01" value="5.90"></div></div>
+      <div class="field"><label>Campaign Discount</label><div class="input-wrap suffixing"><input id="cDiscount" type="number" step="0.01" value="5"><span class="suffix">%</span></div></div>
+      <div class="field"><label>Cost / Item</label><div class="input-wrap prefixing"><span class="prefix">$</span><input id="cCost" type="number" step="0.01" value="1.40"></div></div>
+      <div class="field"><label>Shipping Cost</label><div class="input-wrap prefixing"><span class="prefix">$</span><input id="cShipping" type="number" step="0.01" value="2.30"></div></div>
+    </div></div>
+    <div class="card"><div class="section-title">Platform Fees</div><div class="grid">
+      <div class="field"><label>Commission Fee</label><div class="input-wrap suffixing"><input id="cCommission" type="number" step="0.01" value="10.90"><span class="suffix">%</span></div></div>
+      <div class="field"><label>Service Fee</label><div class="input-wrap suffixing"><input id="cService" type="number" step="0.01" value="6.54"><span class="suffix">%</span></div></div>
+      <div class="field"><label>Transaction Fee</label><div class="input-wrap suffixing"><input id="cTransaction" type="number" step="0.01" value="3.27"><span class="suffix">%</span></div></div>
+    </div></div>
+  </section>
+
+  <div class="card hero"><div class="eyebrow">NET PROFIT</div><div id="netProfit" class="profit">$0.00</div><div id="heroMargin" class="margin">0.00% of selling price</div></div>
+  <div class="card"><div class="section-title">Summary</div><div class="metrics">
+    <div class="metric"><div class="k">NETT SELLING PRICE</div><div id="netSelling" class="v">$0.00</div></div>
+    <div class="metric"><div class="k">TOTAL COGS</div><div id="totalCogs" class="v">$0.00</div></div>
+    <div class="metric"><div class="k">GROSS PROFIT</div><div id="grossProfit" class="v">$0.00</div></div>
+    <div class="metric"><div class="k">PROFIT / COGS</div><div id="marginCogs" class="v">0.00%</div></div>
+    <div class="metric full" id="discountSummary"><div class="k">AFTER CAMPAIGN DISCOUNT</div><div id="afterDiscount" class="v">—</div></div>
+  </div></div>
+  <div class="card"><div class="section-title">Fee Breakdown</div><div id="feeBreakdown"></div></div>
+  <div class="actions"><button class="btn secondary" id="resetBtn">Reset</button><button class="btn primary" id="copyBtn">Copy Summary</button></div>
+  <button class="btn primary install" id="installBtn">Install App</button>
+  <p class="note">Shipping is entered as a positive cost in the app and deducted automatically. “Match Excel” follows your original formulas; “Order-corrected” applies price, discounts and percentage fees consistently to the whole MOQ order.</p>
+</div>
+<script>
+const $=id=>document.getElementById(id); let tab='standard', mode='excel'; let deferredPrompt=null;
+const num=id=>Number($(id).value)||0; const money=n=>new Intl.NumberFormat('en-SG',{style:'currency',currency:'SGD',minimumFractionDigits:2}).format(n); const pct=n=>Number.isFinite(n)?(n*100).toFixed(2)+'%':'—';
+function standard(){const q=Math.max(0,num('sMoq')),p=num('sPrice'),cost=num('sCost'),ship=num('sShipping'),comm=num('sCommission')/100,serv=num('sService')/100,txn=num('sTransaction')/100;const nett=p*q, cogs=cost*q;let commission,service,transaction,gross;
+ if(mode==='excel'){commission=p*comm;service=p*serv;transaction=nett*txn;gross=p-commission-service-transaction-ship;}else{commission=nett*comm;service=nett*serv;transaction=nett*txn;gross=nett-commission-service-transaction-ship;}
+ const fees=commission+service+transaction+ship,net=gross-cogs; return {nett,cogs,commission,service,transaction,ship,fees,gross,net,mc:cogs?net/cogs:NaN,mp:nett?net/nett:NaN,after:null};}
+function campaign(){const q=Math.max(0,num('cMoq')),p=num('cPrice'),discount=num('cDiscount')/100,cost=num('cCost'),ship=num('cShipping'),comm=num('cCommission')/100,serv=num('cService')/100,txn=num('cTransaction')/100;const nett=p*q,cogs=cost*q;let discountAmt,after,commission,service,transaction,gross;
+ if(mode==='excel'){discountAmt=p*discount;after=nett-discountAmt;commission=p*comm;service=p*serv;transaction=nett*txn;gross=p-commission-service-transaction-ship;}else{discountAmt=nett*discount;after=nett-discountAmt;commission=after*comm;service=after*serv;transaction=after*txn;gross=after-commission-service-transaction-ship;}
+ const fees=commission+service+transaction+ship,net=gross-cogs;return{nett,cogs,commission,service,transaction,ship,fees,gross,net,mc:cogs?net/cogs:NaN,mp:nett?net/nett:NaN,after,discountAmt};}
+function render(){const r=tab==='standard'?standard():campaign();$('netProfit').textContent=money(r.net);$('netProfit').className='profit '+(r.net>=0?'good':'bad');$('heroMargin').textContent=pct(r.mp)+' of selling price';$('netSelling').textContent=money(r.nett);$('totalCogs').textContent=money(r.cogs);$('grossProfit').textContent=money(r.gross);$('marginCogs').textContent=pct(r.mc);$('discountSummary').classList.toggle('hidden',tab!=='campaign');$('afterDiscount').textContent=r.after==null?'—':money(r.after);
+ $('feeBreakdown').innerHTML=`<div class="fee-row"><span>Commission Fee</span><strong class="negative">−${money(r.commission)}</strong></div><div class="fee-row"><span>Service Fee</span><strong class="negative">−${money(r.service)}</strong></div><div class="fee-row"><span>Transaction Fee</span><strong class="negative">−${money(r.transaction)}</strong></div><div class="fee-row"><span>Shipping</span><strong class="negative">−${money(r.ship)}</strong></div><div class="fee-row"><span>Total Fees & Shipping</span><strong class="negative">−${money(r.fees)}</strong></div>`;}
+function setTab(t){tab=t;$('tabStandard').classList.toggle('active',t==='standard');$('tabCampaign').classList.toggle('active',t==='campaign');$('standardPanel').classList.toggle('hidden',t!=='standard');$('campaignPanel').classList.toggle('hidden',t!=='campaign');render();}
+function setMode(m){mode=m;$('modeExcel').classList.toggle('active',m==='excel');$('modeCorrected').classList.toggle('active',m==='corrected');$('modeHelp').textContent=m==='excel'?'Reproduces the uploaded spreadsheet formulas exactly, including its per-item/MOQ behaviour.':'Calculates discounts and percentage fees from the whole order value, which is more consistent when MOQ is above 1.';render();}
+$('tabStandard').onclick=()=>setTab('standard');$('tabCampaign').onclick=()=>setTab('campaign');$('modeExcel').onclick=()=>setMode('excel');$('modeCorrected').onclick=()=>setMode('corrected');document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
+$('resetBtn').onclick=()=>{if(tab==='standard'){sMoq.value=1;sPrice.value=10;sCost.value=.7;sShipping.value=2.3;sCommission.value=10.9;sService.value=5.4;sTransaction.value=3.27}else{cMoq.value=1;cPrice.value=5.9;cDiscount.value=5;cCost.value=1.4;cShipping.value=2.3;cCommission.value=10.9;cService.value=6.54;cTransaction.value=3.27}render()};
+$('copyBtn').onclick=async()=>{const r=tab==='standard'?standard():campaign();const text=`Shopee ${tab==='campaign'?'Campaign ':''}Calculation\nMode: ${mode==='excel'?'Match Excel':'Order-corrected'}\nNett Selling Price: ${money(r.nett)}\nTotal COGS: ${money(r.cogs)}\nGross Profit: ${money(r.gross)}\nNet Profit: ${money(r.net)}\nProfit / COGS: ${pct(r.mc)}\nProfit / Price: ${pct(r.mp)}`;try{await navigator.clipboard.writeText(text);$('copyBtn').textContent='Copied ✓';setTimeout(()=>$('copyBtn').textContent='Copy Summary',1200)}catch(e){alert(text)}};
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').style.display='block'});$('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').style.display='none'}};
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+render();
+</script>
+</body></html>
